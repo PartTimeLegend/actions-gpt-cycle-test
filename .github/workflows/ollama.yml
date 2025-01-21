@@ -45,7 +45,7 @@ jobs:
       # Step 3: Pull the Ollama Docker Image
       - name: Pull Ollama Docker Image
         run: |
-          docker pull ollama:latest
+          docker pull ollama/ollama:latest
 
       # Step 4: Scan and Improve Code
       - name: Improve Code Using Ollama
