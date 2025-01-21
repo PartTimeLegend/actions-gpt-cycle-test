@@ -1,4 +1,4 @@
-name: GPT-4 Code Improvement
+name: Apply GPT-4 Improvements to Code
 
 on:
   push:
@@ -9,98 +9,31 @@ on:
       - master
 
 jobs:
-  gpt4-improvements:
+  improve-code:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
 
-      - name: Set up Node.js (or Python depending on your environment)
-        uses: actions/setup-node@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
 
       - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run GPT-4 improvements
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          pip install -r requirements.txt
-          
-      - name: Set up OpenAI API key
-        run: echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
-
-      - name: Run GPT-4 to generate improvements
-        id: gpt4_improvements
-        run: |
-          # Assuming you're using Node.js, install axios for HTTP requests
-          npm install axios
-
-          # Create a script to interact with GPT-4
-          cat > gpt4-improvements.js <<'EOF'
-            const axios = require('axios');
-            const fs = require('fs');
-            const openaiApiKey = process.env.OPENAI_API_KEY;
-
-            const generateImprovement = async (code) => {
-              const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-                model: "gpt-4",
-                messages: [
-                  {
-                    role: "system",
-                    content: "You are a helpful assistant that suggests improvements to code."
-                  },
-                  {
-                    role: "user",
-                    content: `Here is a code snippet. Suggest improvements and randomly modify the code:\n\n${code}`
-                  }
-                ],
-                max_tokens: 150,
-                temperature: 0.7
-              }, {
-                headers: {
-                  'Authorization': `Bearer ${openaiApiKey}`,
-                  'Content-Type': 'application/json'
-                }
-              });
-
-              return response.data.choices[0].message.content;
-            };
-
-            // Read all files in the repository
-            const getFiles = (dir) => {
-              const files = fs.readdirSync(dir);
-              return files.filter(file => file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.py')); // Add file types you care about
-            };
-
-            const applyImprovements = async () => {
-              const files = getFiles('.');
-              for (let file of files) {
-                const code = fs.readFileSync(file, 'utf8');
-                const improvedCode = await generateImprovement(code);
-                fs.writeFileSync(file, improvedCode, 'utf8');
-              }
-            };
-
-            applyImprovements().then(() => {
-              console.log('Improvements applied to codebase');
-            }).catch(err => {
-              console.error('Error applying improvements:', err);
-              process.exit(1);
-            });
-          EOF
-
-          # Run the GPT-4 script
           node gpt4-improvements.js
 
       - name: Commit and push improvements
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@users.noreply.github.com"
-          
-          # Add modified files
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
           git add .
-          
-          # Commit with a random commit message
-          git commit -m "Automated improvements by GPT-4"
-
-          # Push changes to the repository
-          git push origin main
-
+          git commit -m "Apply GPT-4 improvements to codebase"
+          git push
