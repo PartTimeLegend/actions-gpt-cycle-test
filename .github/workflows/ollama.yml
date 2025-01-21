@@ -59,7 +59,7 @@ jobs:
             content=$(cat "$file")
 
             # Use Ollama CLI inside Docker to improve code
-            improved_code=$(echo "$content" | docker run --rm -i ollama/cli chat --model "your-ollama-model" --input "Improve this code")
+            improved_code=$(echo "$content" | docker run --rm -i ollama/ollama chat --model "your-ollama-model" --input "Improve this code")
 
             # Write the improved code back to the file
             echo "$improved_code" > "$file"
