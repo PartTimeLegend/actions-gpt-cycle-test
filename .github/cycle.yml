@@ -3,10 +3,10 @@ name: GPT-4 Code Improvement
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   gpt4-improvements:
