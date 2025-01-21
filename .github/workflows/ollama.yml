@@ -1,0 +1,56 @@
+name: Improve Code with Ollama
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  improve-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Install Dependencies (including Ollama)
+      - name: Install Dependencies
+        run: |
+          # Install Docker (required for Ollama)
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
+
+          # Pull the Ollama Docker image
+          docker pull ollama/cli:latest
+
+      # Step 3: Scan and Improve Code
+      - name: Improve Code Using Ollama
+        run: |
+          # Find all relevant code files
+          find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.java" \) > code_files.txt
+
+          # Loop through each file and improve its content using Ollama
+          while IFS= read -r file; do
+            echo "Processing $file"
+            content=$(cat "$file")
+
+            # Use Ollama CLI inside Docker to improve code
+            improved_code=$(echo "$content" | docker run --rm -i ollama/cli chat --model "your-ollama-model" --input "Improve this code")
+
+            # Write the improved code back to the file
+            echo "$improved_code" > "$file"
+          done < code_files.txt
+
+      # Step 4: Commit and Push Changes
+      - name: Commit and Push Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "Improved code using Ollama"
+          git push
