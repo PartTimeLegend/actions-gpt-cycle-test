@@ -22,7 +22,9 @@ jobs:
           node-version: '16'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          npm install
 
       - name: Run GPT-4 improvements
         env:
