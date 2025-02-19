@@ -13,7 +13,7 @@ jobs:
     steps:
       # Step 1: Checkout the repository
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Uninstall Conflicting Packages and Install Docker
       - name: Install Docker
